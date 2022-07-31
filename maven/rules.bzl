@@ -62,23 +62,28 @@ def _generate_pom_file(ctx, version_file):
         version = ctx.attr.version_overrides.get(pom_dependency_artifact, pom_dependency_version)
         pom_deps.append(pom_dependency_artifact + ":" + version)
 
+    pg_args = [
+        "--project_name=" + ctx.attr.project_name,
+        "--project_description=" + ctx.attr.project_description,
+        "--project_url=" + ctx.attr.project_url,
+        "--license=" + ctx.attr.license,
+        "--scm_url=" + ctx.attr.scm_url,
+        "--target_group_id=" + maven_coordinates.group_id,
+        "--target_artifact_id=" + maven_coordinates.artifact_id,
+        "--target_deps_coordinates=" + ";".join(pom_deps),
+        "--version_file=" + version_file.path,
+        "--output_file=" + pom_file.path
+    ]
+    pg_inputs = [version_file]
+    if ctx.file.workspace_refs:
+        pg_args.append("--workspace_refs_file=" + ctx.file.workspace_refs.path)
+        pg_inputs.append(ctx.file.workspace_refs)
+
     ctx.actions.run(
         executable = ctx.executable._pom_generator,
-        inputs = [version_file, ctx.file.workspace_refs],
+        inputs = pg_inputs,
         outputs = [pom_file],
-        arguments = [
-            "--project_name=" + ctx.attr.project_name,
-            "--project_description=" + ctx.attr.project_description,
-            "--project_url=" + ctx.attr.project_url,
-            "--license=" + ctx.attr.license,
-            "--scm_url=" + ctx.attr.scm_url,
-            "--target_group_id=" + maven_coordinates.group_id,
-            "--target_artifact_id=" + maven_coordinates.artifact_id,
-            "--target_deps_coordinates=" + ";".join(pom_deps),
-            "--version_file=" + version_file.path,
-            "--output_file=" + pom_file.path,
-            "--workspace_refs_file=" + ctx.file.workspace_refs.path,
-        ],
+        arguments = pg_args,
     )
 
     return pom_file
