@@ -41,7 +41,7 @@ def md5(fn):
 
 def upload(url, username, password, local_fn, remote_fn):
     upload_status_code = sp.check_output([
-        'curl', '--silent', '--output', '/dev/stderr',
+        'curl', '--output', '/dev/stderr',
         '--write-out', '%{http_code}',
         '-u', '{}:{}'.format(username, password),
         '--upload-file', local_fn,
@@ -95,6 +95,7 @@ maven_url = maven_repositories[repo_type]
 jar_path = "$JAR_PATH"
 pom_file_path = "$POM_PATH"
 srcjar_path = "$SRCJAR_PATH"
+uberjar_path = "$UBERJAR_PATH"
 
 namespace = { 'namespace': 'http://maven.apache.org/POM/4.0.0' }
 root = ElementTree.parse(pom_file_path).getroot()
@@ -144,6 +145,10 @@ if os.path.exists(srcjar_path):
     upload(maven_url, username, password, srcjar_path, filename_base + '-javadoc.jar')
     if should_sign:
         upload(maven_url, username, password, sign(srcjar_path), filename_base + '-javadoc.jar.asc')
+if os.path.exists(uberjar_path):
+    upload(maven_url, username, password, uberjar_path, filename_base + '-all.jar')
+    if should_sign:
+        upload(maven_url, username, password, sign(uberjar_path), filename_base + '-all.jar.asc')
 
 with tempfile.NamedTemporaryFile(mode='wt', delete=True) as pom_md5:
     pom_md5.write(md5(pom_file_path))
@@ -179,3 +184,13 @@ if os.path.exists(srcjar_path):
         upload(maven_url, username, password, srcjar_sha1.name, filename_base + '-sources.jar.sha1')
         # TODO(vmax): use checksum of real Javadoc instead of srcjar
         upload(maven_url, username, password, srcjar_sha1.name, filename_base + '-javadoc.jar.sha1')
+if os.path.exists(uberjar_path):
+    with tempfile.NamedTemporaryFile(mode='wt', delete=True) as uberjar_md5:
+        uberjar_md5.write(md5(uberjar_path))
+        uberjar_md5.flush()
+        upload(maven_url, username, password, uberjar_md5.name, filename_base + '-all.jar.md5')
+
+    with tempfile.NamedTemporaryFile(mode='wt', delete=True) as uberjar_sha1:
+        uberjar_sha1.write(sha1(uberjar_path))
+        uberjar_sha1.flush()
+        upload(maven_url, username, password, uberjar_sha1.name, filename_base + '-all.jar.sha1')

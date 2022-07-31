@@ -318,6 +318,7 @@ def _deploy_maven_impl(ctx):
 
     lib_jar_link = "lib.jar"
     src_jar_link = "lib.srcjar"
+    uber_jar_link = "lib.fatjar"
     pom_xml_link = ctx.attr.target[MavenDeploymentInfo].pom.basename
 
     ctx.actions.expand_template(
@@ -326,6 +327,7 @@ def _deploy_maven_impl(ctx):
         substitutions = {
             "$JAR_PATH": lib_jar_link,
             "$SRCJAR_PATH": src_jar_link,
+            "$UBERJAR_PATH": uber_jar_link,
             "$POM_PATH": pom_xml_link,
             "{snapshot}": ctx.attr.snapshot,
             "{release}": ctx.attr.release
@@ -343,6 +345,9 @@ def _deploy_maven_impl(ctx):
     if ctx.attr.target[MavenDeploymentInfo].srcjar:
         files.append(ctx.attr.target[MavenDeploymentInfo].srcjar)
         symlinks[src_jar_link] = ctx.attr.target[MavenDeploymentInfo].srcjar
+    if ctx.file.uber_jar:
+        files.append(ctx.file.uber_jar)
+        symlinks[uber_jar_link] = ctx.file.uber_jar
 
     return DefaultInfo(
         executable = deploy_maven_script,
@@ -355,6 +360,10 @@ deploy_maven = rule(
             mandatory = True,
             providers = [MavenDeploymentInfo],
             doc = "assemble_maven target to deploy"
+        ),
+        "uber_jar": attr.label(
+            allow_single_file = True,
+            doc = "Uber-jar file to deploy"
         ),
         "snapshot" : attr.string(
             mandatory = True,
