@@ -54,3 +54,9 @@ config_setting(
         "APPLE_CODE_SIGN": "yes"
     }
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]),
+  visibility = ["//:__pkg__"]
+)

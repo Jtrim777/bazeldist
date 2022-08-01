@@ -18,3 +18,9 @@
 #
 
 exports_files(["deploy_packer.py"])
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]),
+  visibility = ["//packer:__pkg__"]
+)

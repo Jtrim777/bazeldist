@@ -18,3 +18,9 @@
 #
 
 exports_files(["deploy.py"])
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]),
+  visibility = ["//rpm:__pkg__"]
+)

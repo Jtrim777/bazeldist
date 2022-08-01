@@ -26,3 +26,9 @@ bzl_library(
     ],
     visibility = ["//visibility:public"]
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]) + ["//brew/templates:pkg_content"],
+  visibility = ["//:__pkg__"]
+)

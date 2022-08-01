@@ -19,6 +19,8 @@
 
 load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("//artifact:rules.bzl", "deploy_artifact")
 
 exports_files([
     "bazelbuild_rules_python-export-requirements-bzl-for-stardoc.patch",
@@ -138,4 +140,58 @@ stardoc(
         "assemble_rpm",
         "deploy_rpm",
     ],
+)
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob([
+      "*.bzl",
+      "*.patch"
+  ]) + [
+    "BUILD",
+    "LICENSE",
+    "VERSION",
+  ],
+  visibility = ["//:__pkg__"]
+)
+
+pkg_tar(
+    name = "bazeldist-all",
+    srcs = [
+      "//:WORKSPACE",
+      "//:pkg_content",
+      "//apt:pkg_content",
+      "//artifact:pkg_content",
+      "//aws:pkg_content",
+      "//azure:pkg_content",
+      "//brew:pkg_content",
+      "//common:pkg_content",
+      "//crates:pkg_content",
+      "//gcp:pkg_content",
+      "//github:pkg_content",
+      "//maven:pkg_content",
+      "//npm:pkg_content",
+      "//packer:pkg_content",
+      "//pip:pkg_content",
+      "//platform/jvm:pkg_content",
+      "//rpm:pkg_content",
+    ],
+    extension = "tar.gz",
+    # It is all source code, so make it read-only.
+    mode = "0444",
+    # Make it owned by root so it does not have the uid of the CI robot.
+    owner = "0.0",
+    package_dir = ".",
+    strip_prefix = ".",
+)
+
+deploy_artifact(
+  name = "deploy-self",
+  target = ":bazeldist-all.tar.gz",
+  version_file = "//:VERSION",
+  artifact_group = "dev.jtrim777.bazeldist",
+  artifact_name = "bazeldist-all.tar.gz",
+  release = "https://maven.jtrim777.dev/releases",
+  snapshot = "https://maven.jtrim777.dev/snapshots",
+  visibility = ["//visibility:private"]
 )

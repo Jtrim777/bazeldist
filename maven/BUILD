@@ -71,3 +71,9 @@ java_binary(
     main_class = "com.vaticle.bazel.distribution.maven.JarAssemblerKt",
     visibility = ["//visibility:public"]
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]) + ["//maven/templates:pkg_content"],
+  visibility = ["//:__pkg__"]
+)

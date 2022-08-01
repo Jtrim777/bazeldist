@@ -45,3 +45,9 @@ py_binary(
     srcs = ["repackage.py"],
     visibility = ["//visibility:public"]
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]) + ["//pip/templates:pkg_content"],
+  visibility = ["//:__pkg__"]
+)

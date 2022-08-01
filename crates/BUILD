@@ -72,3 +72,9 @@ java_binary(
         ":crate-deployer-lib",
     ],
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]) + ["//crates/templates:pkg_content"],
+  visibility = ["//:__pkg__"]
+)

@@ -18,3 +18,9 @@
 #
 
 exports_files(["deploy.sh"])
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]),
+  visibility = ["//crates:__pkg__"]
+)

@@ -44,3 +44,20 @@ kt_jvm_library(
     deps = [],
     visibility = ["//visibility:public"],
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]) + [
+    "//common/assemble_versioned:pkg_content",
+    "//common/checksum:pkg_content",
+    "//common/generate_json_config:pkg_content",
+    "//common/java_deps:pkg_content",
+    "//common/shell:pkg_content",
+    "//common/targz:pkg_content",
+    "//common/tgz2zip:pkg_content",
+    "//common/util:pkg_content",
+    "//common/workspace_refs:pkg_content",
+    "//common/zip:pkg_content",
+  ],
+  visibility = ["//:__pkg__"]
+)

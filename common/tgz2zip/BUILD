@@ -33,3 +33,9 @@ py_binary(
     srcs = ["tgz2zip.py"],
     visibility = ["//visibility:public"]
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]),
+  visibility = ["//common:__pkg__"]
+)

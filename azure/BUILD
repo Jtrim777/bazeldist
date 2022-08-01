@@ -28,3 +28,9 @@ bzl_library(
     ],
     visibility = ["//visibility:public"]
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]),
+  visibility = ["//:__pkg__"]
+)

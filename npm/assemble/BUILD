@@ -32,3 +32,9 @@ py_binary(
     srcs = ["assemble.py"],
     visibility = ["//visibility:public"],
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]),
+  visibility = ["//npm:__pkg__"]
+)

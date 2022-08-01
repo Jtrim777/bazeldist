@@ -49,3 +49,9 @@ java_binary(
     main_class = "com.vaticle.bazel.distribution.npm.deploy.DeployNPMKt",
     visibility = ["//visibility:public"],
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]),
+  visibility = ["//npm:__pkg__"]
+)

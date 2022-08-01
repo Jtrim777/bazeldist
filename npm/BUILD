@@ -26,3 +26,12 @@ bzl_library(
     ],
     visibility = ["//visibility:public"]
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]) + [
+    "//npm/assemble:pkg_content",
+    "//npm/deploy:pkg_content",
+  ],
+  visibility = ["//:__pkg__"]
+)

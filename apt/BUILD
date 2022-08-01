@@ -32,3 +32,9 @@ py_binary(
     srcs = ["generate_depends_file.py"],
     visibility = ["//visibility:public"]
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]) + ["//apt/templates:pkg_content"],
+  visibility = ["//:__pkg__"]
+)

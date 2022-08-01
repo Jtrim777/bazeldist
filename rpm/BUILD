@@ -32,3 +32,9 @@ py_binary(
     srcs = ["generate_spec_file.py"],
     visibility = ["//visibility:public"]
 )
+
+filegroup(
+  name = "pkg_content",
+  srcs = glob(["*"]) + ["//rpm/templates:pkg_content"],
+  visibility = ["//:__pkg__"]
+)
