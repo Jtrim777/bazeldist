@@ -30,14 +30,14 @@ from posixpath import join as urljoin
 
 def upload(url, username, password, local_fn, remote_fn):
     upload_status_code = sp.check_output([
-        'curl', '--silent', '--output', '/dev/stderr',
+        'curl', '--output', '/dev/stderr',
         '--write-out', '%{http_code}',
         '-u', '{}:{}'.format(username, password),
         '--upload-file', local_fn,
         urljoin(url, remote_fn)
     ]).decode().strip()
 
-    if upload_status_code != '201':
+    if upload_status_code not in {'201', '200'}:
         raise Exception('upload of {} failed, got HTTP status code {}'.format(
             local_fn, upload_status_code))
 
@@ -47,13 +47,13 @@ if len(sys.argv) != 2:
 
 _, repo_type = sys.argv
 
-username, password = os.getenv('DEPLOY_ARTIFACT_USERNAME'), os.getenv('DEPLOY_ARTIFACT_PASSWORD')
+username, password = os.getenv('BAZELDIST_USERNAME'), os.getenv('BAZELDIST_PASSWORD')
 
 if not username:
-    raise ValueError('Error: username should be passed via $DEPLOY_ARTIFACT_USERNAME env variable')
+    raise ValueError('Error: username should be passed via $BAZELDIST_USERNAME env variable')
 
 if not password:
-    raise ValueError('Error: password should be passed via $DEPLOY_ARTIFACT_PASSWORD env variable')
+    raise ValueError('Error: password should be passed via $BAZELDIST_PASSWORD env variable')
 
 version = open("{version_file}", "r").read().strip()
 
@@ -86,6 +86,7 @@ if repo_type == 'release':
 else:
     base_url = '{snapshot}'
 
-dir_url = '{base_url}/{artifact_group}/{version}'.format(version=version, base_url=base_url)
+group_path = '{artifact_group}'.replace('.', '/')
+dir_url = '{base_url}/{group_path}/{version}'.format(version=version, base_url=base_url, group_path=group_path)
 
 upload(dir_url, username, password, '{artifact_path}', filename)

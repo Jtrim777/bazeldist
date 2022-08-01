@@ -79,13 +79,13 @@ if len(sys.argv) < 2:
 
 repo_type, should_sign = unpack_args(*sys.argv)
 
-username, password = os.getenv('DEPLOY_MAVEN_USERNAME'), os.getenv('DEPLOY_MAVEN_PASSWORD')
+username, password = os.getenv('BAZELDIST_USERNAME'), os.getenv('BAZELDIST_PASSWORD')
 
 if not username:
-    raise ValueError('Error: username should be passed via $DEPLOY_MAVEN_USERNAME env variable')
+    raise ValueError('Error: username should be passed via $BAZELDIST_USERNAME env variable')
 
 if not password:
-    raise ValueError('Error: password should be passed via $DEPLOY_MAVEN_PASSWORD env variable')
+    raise ValueError('Error: password should be passed via $BAZELDIST_PASSWORD env variable')
 
 maven_repositories = {
     "snapshot": "{snapshot}",
