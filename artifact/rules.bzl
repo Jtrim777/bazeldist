@@ -22,20 +22,11 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 def _deploy_artifact_impl(ctx):
     _deploy_script = ctx.actions.declare_file("{}_deploy.py".format(ctx.attr.name))
 
-    version_file = ctx.actions.declare_file(ctx.attr.name + "__do_not_reference.version")
-    version = ctx.var.get('version', '0.0.0')
-
-    ctx.actions.run_shell(
-        inputs = [],
-        outputs = [version_file],
-        command = "echo {} > {}".format(version, version_file.path),
-    )
-    
     ctx.actions.expand_template(
         template = ctx.file._deploy_script,
         output = _deploy_script,
         substitutions = {
-            "{version_file}": version_file.short_path,
+            "{version_file}": ctx.file.version_file.short_path,
             "{artifact_path}": ctx.file.target.short_path,
             "{artifact_group}": ctx.attr.artifact_group,
             "{artifact_filename}": ctx.attr.artifact_name,
@@ -45,11 +36,11 @@ def _deploy_artifact_impl(ctx):
     )
     files = [
         ctx.file.target,
-        version_file,
+        ctx.file.version_file,
     ]
 
     symlinks = {
-        'VERSION': version_file,
+        'VERSION': ctx.file.version_file,
     }
 
     return DefaultInfo(
@@ -70,10 +61,9 @@ deploy_artifact = rule(
         ),
         "version_file": attr.label(
             allow_single_file = True,
+            mandatory = True,
             doc = """
             File containing version string.
-            Alternatively, pass --define version=VERSION to Bazel invocation.
-            Not specifying version at all defaults to '0.0.0'
             """,
         ),
         "artifact_group": attr.string(
