@@ -32,9 +32,9 @@ kt_jvm_library(
     name = "assembler-lib",
     srcs = glob(["*.kt"]),
     deps = [
-        "@vaticle_bazel_distribution//common",
-        "@vaticle_bazel_distribution//common/shell",
-        "@vaticle_bazel_distribution//common/util",
+        "@bazeldist//common",
+        "@bazeldist//common/shell",
+        "@bazeldist//common/util",
 
         "@maven//:info_picocli_picocli",
         "@maven//:org_zeroturnaround_zt_exec",
