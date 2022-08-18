@@ -17,7 +17,7 @@
 # under the License.
 #
 
-workspace(name="vaticle_bazel_distribution")
+workspace(name="bazeldist")
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
@@ -33,7 +33,7 @@ load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kotlin_repositories", "kt_reg
 kotlin_repositories()
 kt_register_toolchains()
 
-load("@vaticle_bazel_distribution//maven:deps.bzl", "maven_artifacts_with_versions")
+load("@bazeldist//maven:deps.bzl", "maven_artifacts_with_versions")
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 maven_install(
     artifacts = maven_artifacts_with_versions,
@@ -46,7 +46,7 @@ maven_install(
 )
 
 
-# Load @vaticle_bazel_distribution_pip
+# Load @bazeldist_pip
 load("//pip:deps.bzl", pip_deps = "deps")
 pip_deps()
 

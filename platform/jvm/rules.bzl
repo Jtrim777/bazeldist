@@ -17,7 +17,7 @@
 # under the License.
 #
 
-load("@vaticle_bazel_distribution//common:rules.bzl", _assemble_zip = "assemble_zip", _java_deps = "java_deps")
+load("@bazeldist//common:rules.bzl", _assemble_zip = "assemble_zip", _java_deps = "java_deps")
 
 
 supported_oses = ["Mac", "Linux", "Windows"]
@@ -294,7 +294,7 @@ _assemble_zip_to_jvm_platform = rule(
             doc = "Archive containing the Windows WiX toolset",
         ),
         "_assemble_jvm_platform_bin": attr.label(
-            default = "@vaticle_bazel_distribution//platform/jvm:assembler-bin",
+            default = "@bazeldist//platform/jvm:assembler-bin",
             executable = True,
             cfg = "host",
         ),
@@ -379,7 +379,7 @@ def assemble_jvm_platform(name,
         mac_app_id = mac_app_id,
         mac_entitlements = mac_entitlements,
         mac_code_signing_cert = select({
-            "@vaticle_bazel_distribution//platform/jvm:apple-code-sign": mac_code_signing_cert,
+            "@bazeldist//platform/jvm:apple-code-sign": mac_code_signing_cert,
             "//conditions:default": None,
         }),
         mac_deep_sign_jars_regex = mac_deep_sign_jars_regex,

@@ -72,6 +72,26 @@ java_binary(
     visibility = ["//visibility:public"]
 )
 
+kt_jvm_library(
+    name = "deployer-lib",
+    deps = [
+        "@maven//:info_picocli_picocli",
+    ],
+    srcs = [
+        "Deployer.kt",
+    ]
+)
+
+java_binary(
+    name = "deployer",
+    runtime_deps = [
+        ":deployer-lib"
+    ],
+    main_class = "com.vaticle.bazel.distribution.maven.DeployerKt",
+    visibility = ["//visibility:public"]
+)
+
+
 filegroup(
   name = "pkg_content",
   srcs = glob(["*"]) + ["//maven/templates:pkg_content"],

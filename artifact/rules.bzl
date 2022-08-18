@@ -32,6 +32,7 @@ def _deploy_artifact_impl(ctx):
             "{artifact_filename}": ctx.attr.artifact_name,
             "{release}": ctx.attr.release,
             "{snapshot}": ctx.attr.snapshot,
+            "{dosha}": str(ctx.attr.sha256)
         },
     )
     files = [
@@ -86,6 +87,11 @@ deploy_artifact = rule(
             mandatory = True,
             doc = "Repository that the snapshot artifact will be uploaded to"
         ),
+        "sha256": attr.bool(
+            default = False,
+            mandatory = False,
+            doc = "If set to true a sha256 file will be uploaded as well"
+        )
     },
     executable = True,
     implementation = _deploy_artifact_impl,

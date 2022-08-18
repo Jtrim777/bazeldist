@@ -17,7 +17,7 @@
 # under the License.
 #
 
-load("@vaticle_bazel_distribution_pip//:requirements.bzl", vaticle_bazel_distribution_requirement = "requirement")
+load("@bazeldist_pip//:requirements.bzl", bazeldist_requirement = "requirement")
 
 
 def _python_repackage_impl(ctx):
@@ -301,22 +301,22 @@ deploy_pip = rule(
         ),
         "_deps": attr.label_list(
             default = [
-                vaticle_bazel_distribution_requirement("twine"),
-                vaticle_bazel_distribution_requirement("setuptools"),
-                vaticle_bazel_distribution_requirement("wheel"),
-                vaticle_bazel_distribution_requirement("requests"),
-                vaticle_bazel_distribution_requirement("urllib3"),
-                vaticle_bazel_distribution_requirement("chardet"),
-                vaticle_bazel_distribution_requirement("certifi"),
-                vaticle_bazel_distribution_requirement("idna"),
-                vaticle_bazel_distribution_requirement("tqdm"),
-                vaticle_bazel_distribution_requirement("requests_toolbelt"),
-                vaticle_bazel_distribution_requirement("pkginfo"),
-                vaticle_bazel_distribution_requirement("readme_renderer"),
-                vaticle_bazel_distribution_requirement("Pygments"),
-                vaticle_bazel_distribution_requirement("docutils"),
-                vaticle_bazel_distribution_requirement("bleach"),
-                vaticle_bazel_distribution_requirement("webencodings")
+                bazeldist_requirement("twine"),
+                bazeldist_requirement("setuptools"),
+                bazeldist_requirement("wheel"),
+                bazeldist_requirement("requests"),
+                bazeldist_requirement("urllib3"),
+                bazeldist_requirement("chardet"),
+                bazeldist_requirement("certifi"),
+                bazeldist_requirement("idna"),
+                bazeldist_requirement("tqdm"),
+                bazeldist_requirement("requests_toolbelt"),
+                bazeldist_requirement("pkginfo"),
+                bazeldist_requirement("readme_renderer"),
+                bazeldist_requirement("Pygments"),
+                bazeldist_requirement("docutils"),
+                bazeldist_requirement("bleach"),
+                bazeldist_requirement("webencodings")
             ]
         )
     },

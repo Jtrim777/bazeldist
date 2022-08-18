@@ -15,8 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-load("@vaticle_bazel_distribution//common/targz:rules.bzl", "assemble_targz")
-load("@vaticle_bazel_distribution//common/tgz2zip:rules.bzl", "tgz2zip")
+load("@bazeldist//common/targz:rules.bzl", "assemble_targz")
+load("@bazeldist//common/tgz2zip:rules.bzl", "tgz2zip")
 
 def assemble_zip(
         name,

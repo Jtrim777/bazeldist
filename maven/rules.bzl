@@ -284,12 +284,12 @@ assemble_maven = rule(
             doc = "Project source control URL to fill into pom.xml",
         ),
         "_pom_generator": attr.label(
-            default = "@vaticle_bazel_distribution//maven:pom-generator",
+            default = "@bazeldist//maven:pom-generator",
             executable = True,
             cfg = "host",
         ),
         "_jar_assembler": attr.label(
-            default = "@vaticle_bazel_distribution//maven:jar-assembler",
+            default = "@bazeldist//maven:jar-assembler",
             executable = True,
             cfg = "host",
         ),
@@ -314,45 +314,39 @@ MavenDeploymentInfo = provider(
 
 
 def _deploy_maven_impl(ctx):
-    deploy_maven_script = ctx.actions.declare_file("%s-deploy.py" % ctx.attr.name)
-
-    lib_jar_link = "lib.jar"
-    src_jar_link = "lib.srcjar"
-    uber_jar_link = "lib.fatjar"
-    pom_xml_link = ctx.attr.target[MavenDeploymentInfo].pom.basename
-
-    ctx.actions.expand_template(
-        template = ctx.file._deployment_script,
-        output = deploy_maven_script,
-        substitutions = {
-            "$JAR_PATH": lib_jar_link,
-            "$SRCJAR_PATH": src_jar_link,
-            "$UBERJAR_PATH": uber_jar_link,
-            "$POM_PATH": pom_xml_link,
-            "{snapshot}": ctx.attr.snapshot,
-            "{release}": ctx.attr.release
-        }
-    )
-
-    files = [
-        ctx.attr.target[MavenDeploymentInfo].jar,
-        ctx.attr.target[MavenDeploymentInfo].pom,
+    dargs = [
+        "--artifact=" + ctx.attr.target[MavenDeploymentInfo].jar.path,
+        "--pom=" + ctx.attr.target[MavenDeploymentInfo].pom.path,
+        "--snapshot=" + ctx.attr.snapshot,
+        "--release=" + ctx.attr.release
     ]
-    symlinks = {
-        lib_jar_link: ctx.attr.target[MavenDeploymentInfo].jar,
-        pom_xml_link: ctx.attr.target[MavenDeploymentInfo].pom,
-    }
-    if ctx.attr.target[MavenDeploymentInfo].srcjar:
-        files.append(ctx.attr.target[MavenDeploymentInfo].srcjar)
-        symlinks[src_jar_link] = ctx.attr.target[MavenDeploymentInfo].srcjar
-    if ctx.file.uber_jar:
-        files.append(ctx.file.uber_jar)
-        symlinks[uber_jar_link] = ctx.file.uber_jar
 
-    return DefaultInfo(
-        executable = deploy_maven_script,
-        runfiles = ctx.runfiles(files=files, symlinks = symlinks)
+    if ctx.attr.is_snapshot:
+        dargs.append("--is-snapshot")
+
+    if ctx.attr.target[MavenDeploymentInfo].srcjar:
+        dargs.append("--sources=" + ctx.attr.target[MavenDeploymentInfo].srcjar.path)
+
+    if ctx.file.uber_jar:
+        dargs.append("--uber-jar=" + ctx.file.uber_jar.path)
+
+    logfile = ctx.actions.declare_file("{}.log".format(ctx.attr.name))
+
+    ctx.actions.run(
+        executable = ctx.executable._deployer,
+        outputs = [
+            logfile
+        ],
+        inputs = [
+            ctx.attr.target[MavenDeploymentInfo].jar,
+            ctx.attr.target[MavenDeploymentInfo].pom,
+            ctx.attr.target[MavenDeploymentInfo].srcjar,
+            ctx.file.uber_jar
+        ],
+        arguments = dargs
     )
+
+    return DefaultInfo()
 
 deploy_maven = rule(
     attrs = {
@@ -373,12 +367,16 @@ deploy_maven = rule(
             mandatory = True,
             doc = 'Release repository to release maven artifact to'
         ),
-        "_deployment_script": attr.label(
-            allow_single_file = True,
-            default = "@vaticle_bazel_distribution//maven/templates:deploy.py",
+        "is_snapshot" : attr.bool(
+            default = False,
+            doc = 'Set to true to deploy as a snapshot version'
+        ),
+        "_deployer": attr.label(
+            executable = True,
+            cfg = "host",
+            default = "@bazeldist//maven:deployer",
         ),
     },
-    executable = True,
     implementation = _deploy_maven_impl,
     doc = "Deploy `assemble_maven` target into Maven repo"
 )

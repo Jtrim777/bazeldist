@@ -26,9 +26,14 @@ import re
 import subprocess as sp
 import sys
 from posixpath import join as urljoin
+import hashlib
+import tempfile
 
+def sha256(fn):
+    return hashlib.sha256(open(fn, 'rb').read()).hexdigest()
 
 def upload(url, username, password, local_fn, remote_fn):
+    print("\u001b[36mUploading \u001b[3m%s\u001b[0;36m...\u001b[0m" % remote_fn)
     upload_status_code = sp.check_output([
         'curl', '--output', '/dev/stderr',
         '--write-out', '%{http_code}',
@@ -36,6 +41,7 @@ def upload(url, username, password, local_fn, remote_fn):
         '--upload-file', local_fn,
         urljoin(url, remote_fn)
     ]).decode().strip()
+    print()
 
     if upload_status_code not in {'201', '200'}:
         raise Exception('upload of {} failed, got HTTP status code {}'.format(
@@ -90,3 +96,8 @@ group_path = '{artifact_group}'.replace('.', '/')
 dir_url = '{base_url}/{group_path}/{version}'.format(version=version, base_url=base_url, group_path=group_path)
 
 upload(dir_url, username, password, '{artifact_path}', filename)
+if bool({dosha}):
+    with tempfile.NamedTemporaryFile(mode='wt', delete=True) as sha_tmp:
+        sha_tmp.write(sha256('{artifact_path}'))
+        sha_tmp.flush()
+        upload(dir_url, username, password, sha_tmp.name, filename + '.sha256')

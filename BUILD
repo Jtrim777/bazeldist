@@ -43,7 +43,7 @@ bzl_library(
         "@rules_pkg//:providers.bzl",
         "@rules_pkg//:private/util.bzl",
         "@bazel_tools//tools:bzl_srcs",
-        "@vaticle_bazel_distribution_pip//:requirements.bzl",
+        "@bazeldist_pip//:requirements.bzl",
         "@rules_python//python:whl.bzl",
         "@rules_rust//rust:rules",
     ],
@@ -193,5 +193,6 @@ deploy_artifact(
   artifact_name = "bazeldist-all.tar.gz",
   release = "https://maven.jtrim777.dev/releases",
   snapshot = "https://maven.jtrim777.dev/snapshots",
-  visibility = ["//visibility:private"]
+  visibility = ["//visibility:private"],
+  sha256 = True
 )

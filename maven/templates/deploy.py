@@ -40,6 +40,7 @@ def md5(fn):
 
 
 def upload(url, username, password, local_fn, remote_fn):
+    print("\u001b[36mUploading \u001b[3m%s\u001b[0;36m...\u001b[0m" % remote_fn)
     upload_status_code = sp.check_output([
         'curl', '--output', '/dev/stderr',
         '--write-out', '%{http_code}',
@@ -47,6 +48,7 @@ def upload(url, username, password, local_fn, remote_fn):
         '--upload-file', local_fn,
         urljoin(url, remote_fn)
     ]).decode().strip()
+    print()
 
     if upload_status_code not in {'200', '201'}:
         raise Exception('upload of {} failed, got HTTP status code {}'.format(
