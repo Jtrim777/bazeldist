@@ -52,7 +52,7 @@ bzl_library(
 stardoc(
     name = "docs",
     input = "doc_hub.bzl",
-    out = "README.md",
+    out = "rules.md",
     deps = [
         "//apt:lib",
         "//aws:lib",
