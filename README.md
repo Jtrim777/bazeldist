@@ -1,3 +1,5 @@
+[![Latest](https://maven.jtrim777.dev/api/badge/latest/releases/dev/jtrim777/bazeldist)](https://github.com/jtrim777-dev/bazeldist)
+
 # bazeldist
 > Adapted from [vaticle/bazel-distribution](https://github.com/vaticle/bazel-distribution)
 
