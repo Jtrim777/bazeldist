@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -60,7 +60,7 @@ def verify_zip_file(fn):
 
 
 def verify_environment():
-    for var in ["DEPLOY_BREW_TOKEN", "DEPLOY_BREW_USERNAME", "DEPLOY_BREW_EMAIL"]:
+    for var in ["GITHUB_TOKEN", "GITHUB_ACTOR", "GITHUB_EMAIL"]:
         if not os.getenv(var):
             print('Error - ${} must be defined'.format(var))
             sys.exit(1)
@@ -73,8 +73,8 @@ if len(sys.argv) != 2:
 verify_environment()
 
 # configurations #
-git_username = os.getenv('DEPLOY_BREW_USERNAME')
-git_email = os.getenv('DEPLOY_BREW_EMAIL')
+git_username = os.getenv('GITHUB_ACTOR')
+git_email = os.getenv('GITHUB_EMAIL')
 formula_filename = os.path.basename(os.readlink('formula'))
 with open('formula') as formula_file:
     formula_template = formula_file.read()
@@ -93,7 +93,7 @@ checksum_of_distribution_local = get_checksum()
 tap_localpath = tempfile.mkdtemp()
 try:
     print('Cloning brew tap: "{}"...'.format(tap_url))
-    sp.check_call(['bash', '-c', 'git clone ' + url_with_credential(tap_url, '$DEPLOY_BREW_TOKEN') + ' ' + tap_localpath])
+    sp.check_call(['bash', '-c', 'git clone ' + url_with_credential(tap_url, '$GITHUB_TOKEN') + ' ' + tap_localpath])
     sp.check_call(["git", "config", "user.email", git_email], cwd=tap_localpath)
     sp.check_call(["git", "config", "user.name", git_username], cwd=tap_localpath)
     sp.check_call(['mkdir', '-p', '{brew_folder}'], cwd=tap_localpath)
@@ -133,7 +133,7 @@ try:
         print('Error - unable to proceed with deploying to brew due to the following error:')
         raise e
 
-    sp.check_call(['bash', '-c', 'git push ' + url_with_credential(tap_url, '$DEPLOY_BREW_TOKEN') + ' master'], cwd=tap_localpath)
+    sp.check_call(['bash', '-c', 'git push ' + url_with_credential(tap_url, '$GITHUB_TOKEN') + ' master'], cwd=tap_localpath)
     print("Done! Enjoy the beer.")
 finally:
     shutil.rmtree(tap_localpath)
