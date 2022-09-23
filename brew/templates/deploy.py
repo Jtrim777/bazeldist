@@ -133,7 +133,10 @@ try:
         print('Error - unable to proceed with deploying to brew due to the following error:')
         raise e
 
-    sp.check_call(['bash', '-c', 'git push ' + url_with_credential(tap_url, '$GITHUB_TOKEN') + ' master'], cwd=tap_localpath)
+    gbr = sp.run(["git", "branch", "--show-current"], capture_output=True)
+    cbranch = gbr.stdout.decode().strip()
+
+    sp.check_call(['bash', '-c', 'git push ' + url_with_credential(tap_url, '$GITHUB_TOKEN') + ' ' + cbranch], cwd=tap_localpath)
     print("Done! Enjoy the beer.")
 finally:
     shutil.rmtree(tap_localpath)
