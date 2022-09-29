@@ -75,6 +75,7 @@ verify_environment()
 # configurations #
 git_username = os.getenv('GITHUB_ACTOR')
 git_email = os.getenv('GITHUB_EMAIL')
+git_token = os.getenv('GITHUB_TOKEN')
 formula_filename = os.path.basename(os.readlink('formula'))
 with open('formula') as formula_file:
     formula_template = formula_file.read()
@@ -93,7 +94,7 @@ checksum_of_distribution_local = get_checksum()
 tap_localpath = tempfile.mkdtemp()
 try:
     print('Cloning brew tap: "{}"...'.format(tap_url))
-    sp.check_call(['bash', '-c', 'git clone ' + url_with_credential(tap_url, '$GITHUB_TOKEN') + ' ' + tap_localpath])
+    sp.check_call(['bash', '-c', 'git clone ' + url_with_credential(tap_url, git_token) + ' ' + tap_localpath])
     sp.check_call(["git", "config", "user.email", git_email], cwd=tap_localpath)
     sp.check_call(["git", "config", "user.name", git_username], cwd=tap_localpath)
     sp.check_call(['mkdir', '-p', '{brew_folder}'], cwd=tap_localpath)
@@ -136,7 +137,7 @@ try:
     gbr = sp.run(["git", "branch", "--show-current"], capture_output=True)
     cbranch = gbr.stdout.decode().strip()
 
-    sp.check_call(['bash', '-c', 'git push ' + url_with_credential(tap_url, '$GITHUB_TOKEN') + ' ' + cbranch], cwd=tap_localpath)
+    sp.check_call(['bash', '-c', 'git push ' + url_with_credential(tap_url, git_token) + ' ' + cbranch], cwd=tap_localpath)
     print("Done! Enjoy the beer.")
 finally:
     shutil.rmtree(tap_localpath)
