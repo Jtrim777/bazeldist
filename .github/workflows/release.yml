@@ -1,0 +1,53 @@
+name: Release
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Execute Deployment
+        id: exec_deploy
+        uses: jtrim777-dev/bazeldist-action@main
+        with:
+          tag: ${{ github.event.release.tag_name }}
+          version_file: "VERSION"
+          bazel_targets: "//:deploy-self"
+          dist_user: ${{ secrets.bazeldist_user }}
+          dist_token: ${{ secrets.bazeldist_token }}
+      - name: Commit version update
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: GitHub Actions
+          author_email: Jtrim777
+          message: 'Update versioning info'
+          branch: main
+          pull: 'NO-PULL'
+          push: true
+          tag: 'v${{ steps.exec_deploy.outputs.version }} --force'
+  modify_release:
+    name: Update GitHub Release Info
+    environment: release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.release.prerelease }} != true
+    needs: deploy
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get Previous Tag
+        id: get_tags
+        run: |
+          git fetch -a
+          echo ::set-output name=current_tag::$(git tag --sort "-committerdate" | sed '/-/d' | sed -n 1p)
+          echo ::set-output name=version::$(git tag --sort "-committerdate" | sed '/-/d' | sed -n 1p | sed 's/v//')
+          echo ::set-output name=previous_tag::$(git tag --sort "-committerdate" | sed '/-/d' | sed -n 2p)
+      - uses: irongut/EditRelease@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: ${{ github.event.release.id }}
+          body: |
+            **Full Changelog:** [${{ steps.get_tags.outputs.previous_tag }}...${{ steps.get_tags.outputs.current_tag }}](https://github.com/jtrim777-dev/bazeldist/compare/${{ steps.get_tags.outputs.previous_tag }}...${{ steps.get_tags.outputs.current_tag }})
+            Artifacts Published to [Jtrim777 Artifact Repository](https://maven.jtrim777.dev/#/releases/dev/jtrim777/bazeldist/${{ steps.get_tags.outputs.version }})
