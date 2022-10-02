@@ -98,7 +98,9 @@ try:
     sp.check_call(["git", "config", "user.email", git_email], cwd=tap_localpath)
     sp.check_call(["git", "config", "user.name", git_username], cwd=tap_localpath)
     sp.check_call(['mkdir', '-p', '{brew_folder}'], cwd=tap_localpath)
-    formula_content = formula_template.replace('{version}', version).replace('{sha256}', checksum_of_distribution_local)
+    formula_content = formula_template.replace('{version}', version)\
+        .replace('{sha256}', checksum_of_distribution_local)\
+        .replace('{release_mode}', tap_type)
     distribution_url = get_distribution_url_from_formula(formula_content)
     print('Attempting to match the checksums of local distribution and Github distribution from "{}"...'.format(distribution_url))
     _, ext = os.path.splitext(distribution_url)
