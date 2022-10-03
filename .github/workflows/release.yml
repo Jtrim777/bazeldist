@@ -16,6 +16,7 @@ jobs:
         with:
           tag: ${{ github.event.release.tag_name }}
           version_file: "VERSION"
+          version_sub_files: VERSION
           bazel_targets: "//:deploy-self"
           dist_user: ${{ secrets.bazeldist_user }}
           dist_token: ${{ secrets.bazeldist_token }}
